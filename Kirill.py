@@ -1,14 +1,29 @@
-import cv2
-import time
-from PIL import Image, ImageChops
+import cv2  # Импортируем библиотеку OpenCV для работы с видео и изображениями
+from PIL import Image, ImageChops  # Импортируем классы Image и ImageChops из библиотеки Pillow для работы с изображениями
+import RPi.GPIO as GPIO  # Импортируем библиотеку для работы с GPIO
+import time  # Импортируем библиотеку для работы с временем
+
+camera = cv2.VideoCapture(0)  # Инициализируем захват видео с камеры (номер 0)
+count = 0  # Инициализируем счетчик пикселей
+
+# Настройка GPIO для сервомотора
+GPIO.setmode(GPIO.BCM)
+servo_pin = 18
+GPIO.setup(servo_pin, GPIO.OUT)
+
+# Создаем объект PWM для сервомотора
+pwm = GPIO.PWM(servo_pin, 50)
+pwm.start(0)
 
 
-time.sleep(1)
-camera = cv2.VideoCapture(0)
-time.sleep(1)
-count = 0
+def set_angle():
+    duty = 90
+    GPIO.output(pwm, True)
+    pwm.ChangeDutyCycle(servo_pin, duty)
+
 def yes_or_not():
     if count <= 30000:
+        set_angle()
         return 0
     else:
         return 1
