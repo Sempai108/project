@@ -12,7 +12,7 @@ servo_pin = 18
 GPIO.setup(servo_pin, GPIO.OUT)
 
 # Создаем объект PWM для сервомотора
-pwm = GPIO.PWM(servo_pin, 50)
+pwm = GPIO.PWM(servo_pin)
 pwm.start(0) 
 
 
