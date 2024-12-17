@@ -12,7 +12,7 @@ servo_pin = 18
 GPIO.setup(servo_pin, GPIO.OUT)
 
 # Создаем объект PWM для сервомотора
-pwm = GPIO.PWM(servo_pin)
+pwm = GPIO.PWM(servo_pin, 50)
 pwm.start(0) 
 
 
@@ -36,11 +36,11 @@ def yes_or_not():
     if count >= 30000:
         print('Yes_or_not: True')
         # Поворачиваем сервомотор на 90 градусов
-        set_angle(pwm, 90)
+        set_angle(servo_pin, 90)
     else:
         print('Yes_or_not: False')
         # Поворачиваем сервомотор на 0 градусов
-        set_angle(pwm, 0)
+        set_angle(servo_pin, 0)
 
 
 def process_image():
