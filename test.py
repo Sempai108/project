@@ -75,7 +75,7 @@ try:
             img2 = cv2.imread("w1.png")
             cv2.imshow('Captured Image', img2)
 
-            if cv2.waitKey(1) & 0xFF == ord('qd'):
+            if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
         except Exception as e:
             print(f"Failed to display image: {e}")

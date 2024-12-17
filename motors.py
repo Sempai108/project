@@ -6,18 +6,15 @@ import time  # Импортируем библиотеку для работы �
 camera = cv2.VideoCapture(0)  # Инициализируем захват видео с камеры (номер 0)
 count = 0  # Инициализируем счетчик пикселей
 
-# Настройка GPIO для сервомоторов
+# Настройка GPIO для сервомотора
 GPIO.setmode(GPIO.BCM)
-servo_pin1 = 18
-servo_pin2 = 23
-GPIO.setup(servo_pin1, GPIO.OUT)
-GPIO.setup(servo_pin2, GPIO.OUT)
+servo_pin = 18
+GPIO.setup(servo_pin, GPIO.OUT)
 
-# Создаем объекты PWM для сервомоторов
-pwm1 = GPIO.PWM(servo_pin1, 50)
-pwm2 = GPIO.PWM(servo_pin2, 50)
-pwm1.start(0)
-pwm2.start(0)
+# Создаем объект PWM для сервомотора
+pwm = GPIO.PWM(servo_pin, 50)
+pwm.start(0) 
+
 
 def set_angle(pwm, angle):
     duty = angle / 18 + 2
@@ -27,23 +24,24 @@ def set_angle(pwm, angle):
     GPIO.output(pwm, False)
     pwm.ChangeDutyCycle(0)
 
+
 def is_pixel_black_or_white(pixel):
     red, green, blue = pixel
     average = (red + green + blue) / 3
     return 1 if average >= 20 else 0
 
+
 def yes_or_not():
     global count
     if count >= 30000:
         print('Yes_or_not: True')
-        # Поворачиваем сервомоторы на 90 градусов
-        set_angle(pwm1, 90)
-        set_angle(pwm2, 90)
+        # Поворачиваем сервомотор на 90 градусов
+        set_angle(pwm, 90)
     else:
         print('Yes_or_not: False')
-        # Поворачиваем сервомоторы на 0 градусов
-        set_angle(pwm1, 0)
-        set_angle(pwm2, 0)
+        # Поворачиваем сервомотор на 0 градусов
+        set_angle(pwm, 0)
+
 
 def process_image():
     global count
@@ -82,6 +80,7 @@ def process_image():
     print(count, width * height)
     yes_or_not()
 
+
 try:
     # Захват и сохранение базового изображения при запуске
     good, image = camera.read()
@@ -106,6 +105,5 @@ try:
 finally:
     camera.release()
     cv2.destroyAllWindows()
-    pwm1.stop()
-    pwm2.stop()
+    pwm.stop()
     GPIO.cleanup()
