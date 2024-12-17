@@ -16,13 +16,13 @@ pwm = GPIO.PWM(servo_pin, 50)
 pwm.start(0) 
 
 
-def set_angle(pwm, angle):
-    duty = angle / 18 + 2
+def set_angle():
+    duty = 90
     GPIO.output(pwm, True)
-    pwm.ChangeDutyCycle(duty)
+    pwm.ChangeDutyCycle(servo_pin, duty)
     time.sleep(1)
     GPIO.output(pwm, False)
-    pwm.ChangeDutyCycle(0)
+    pwm.ChangeDutyCycle(servo_pin, 0)
 
 
 def is_pixel_black_or_white(pixel):
@@ -36,11 +36,11 @@ def yes_or_not():
     if count >= 30000:
         print('Yes_or_not: True')
         # Поворачиваем сервомотор на 90 градусов
-        set_angle(servo_pin, 90)
+        set_angle()
     else:
         print('Yes_or_not: False')
         # Поворачиваем сервомотор на 0 градусов
-        set_angle(servo_pin, 0)
+        set_angle()
 
 
 def process_image():
@@ -102,6 +102,8 @@ try:
                 break
         except Exception as e:
             print(f"Failed to display image: {e}")
+except Exception as e:
+    print(f"Failed to display image: {e}")
 finally:
     camera.release()
     cv2.destroyAllWindows()
