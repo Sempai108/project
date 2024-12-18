@@ -20,9 +20,7 @@ def set_angle():
     duty = 90
     GPIO.output(pwm, True)
     pwm.ChangeDutyCycle(servo_pin, duty)
-    time.sleep(1)
-    GPIO.output(pwm, False)
-    pwm.ChangeDutyCycle(servo_pin, 0)
+
 
 
 def is_pixel_black_or_white(pixel):

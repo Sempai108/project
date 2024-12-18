@@ -3,8 +3,6 @@ from PIL import Image, ImageChops  # Импортируем классы Image �
 import RPi.GPIO as GPIO  # Импортируем библиотеку для работы с GPIO
 import time  # Импортируем библиотеку для работы с временем
 
-from motors import set_angle
-
 camera = cv2.VideoCapture(0)  # Инициализируем захват видео с камеры (номер 0)
 count = 0  # Инициализируем счетчик пикселей
 
@@ -12,7 +10,6 @@ count = 0  # Инициализируем счетчик пикселей
 GPIO.setmode(GPIO.BCM)
 servo_pin = 18
 GPIO.setup(servo_pin, GPIO.OUT)
-set_angle(90)
 
 # Создаем объект PWM для сервомотора
 pwm = GPIO.PWM(servo_pin, 50)
@@ -27,6 +24,7 @@ def set_angle(angle):
     time.sleep(1)
     GPIO.output(servo_pin, False)
     pwm.ChangeDutyCycle(0)
+    set_angle(90)
 
 def yes_or_not():
     if count <= 30000:

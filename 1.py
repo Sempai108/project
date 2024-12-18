@@ -18,6 +18,11 @@ def set_angle(angle):
     GPIO.output(servo_pin, False)
     pwm.ChangeDutyCycle(0)
 
+    def set_angle():
+        duty = 90
+        GPIO.output(pwm, True)
+        pwm.ChangeDutyCycle(int(servo_pin), int(duty))
+
 try:
     while True:
         set_angle(90)  # Поворот на 90 градусов
