@@ -24,7 +24,6 @@ def set_angle(angle):
     time.sleep(1)
     GPIO.output(servo_pin, False)
     pwm.ChangeDutyCycle(0)
-    set_angle(90)
 
 def yes_or_not():
     if count <= 30000:
@@ -37,7 +36,7 @@ def yes_or_not():
 def is_pixel_black_or_write(pixel):
     red, green, blue = pixel
     average = (red + green + blue) / 3
-    if average >= 20:
+    if average >= 30:
         return 1
     else:
         return 0
