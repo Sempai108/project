@@ -13,13 +13,17 @@ GPIO.setup(servo_pin, GPIO.OUT)
 
 # Создаем объект PWM для сервомотора
 pwm = GPIO.PWM(servo_pin, 50)
-pwm.start(0)
+pwm.start(0) #Меня смущяет 0, потому что коэффициент заполнения 0 в контексте ШИМ-сигнала означает, что сигнал всегда находится
+# в состоянии LOW, то есть его коэффициент заполнения равен 0%
 
 
-def set_angle():
-    duty = 90
-    GPIO.output(pwm, True)
-    pwm.ChangeDutyCycle(servo_pin, duty)
+def set_angle(angle):
+    duty = angle / 18 + 2
+    GPIO.output(servo_pin, True)
+    pwm.ChangeDutyCycle(duty)
+    time.sleep(1)
+    GPIO.output(servo_pin, False)
+    pwm.ChangeDutyCycle(0)
 
 def yes_or_not():
     if count <= 30000:
@@ -70,6 +74,9 @@ def difference():
         if old == 1 and human == 1:
 
             print("HUMAN")
+            set_angle(90)  # Поворот на 90 градусов
+            time.sleep(2)
+            set_angle(0)  # Поворот на 0 градусов
             old = 0
             human = 0
         else:
