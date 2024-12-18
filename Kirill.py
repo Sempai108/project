@@ -27,7 +27,7 @@ def set_angle(angle):
 
 def yes_or_not():
     if count <= 30000:
-        set_angle()
+        set_angle(90)
         return 0
     else:
         return 1
