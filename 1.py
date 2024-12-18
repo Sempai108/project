@@ -16,7 +16,7 @@ def set_angle(angle):
     pwm.ChangeDutyCycle(duty)
     time.sleep(1)
     GPIO.output(servo_pin, False)
-    pwm.ChangeDutyCycle(0)
+    pwm.ChangeDutyCycle(2)
 
 try:
     while True:
