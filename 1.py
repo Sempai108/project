@@ -22,7 +22,7 @@ try:
     while True:
         set_angle(90)  # Поворот на 90 градусов
         time.sleep(2)
-        set_angle(0)   # Поворот на 0 градусов
+        set_angle(45)   # Поворот на 0 градусов
         time.sleep(2)
 finally:
     pwm.stop()
