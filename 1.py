@@ -29,4 +29,3 @@ try:
 finally:
     pwm.stop()
     GPIO.cleanup()
-d
