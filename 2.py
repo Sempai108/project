@@ -49,7 +49,6 @@ def difference():
         time.sleep(3)
         good, img = camera.read()
         cv2.imwrite('w1.png', img)
-        cv2.imshow("Image", img)
         image_1 = Image.open("w.png")
         image_2 = Image.open("w1.png")
 
@@ -57,7 +56,6 @@ def difference():
         result.save('result.jpg')
         count = 0
         res = cv2.imread('result.jpg', cv2.IMREAD_GRAYSCALE)
-        cv2.imshow('RES', res)
         image = Image.open('result.jpg')
         width, height = image.size
         for y in range(height):
