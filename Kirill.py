@@ -8,20 +8,21 @@ count = 0  # Инициализируем счетчик пикселей
 
 # Настройка GPIO для сервомотора
 GPIO.setmode(GPIO.BCM)
-servo_pin = 18
-GPIO.setup(servo_pin, GPIO.OUT)
+servo_pin1 = 18
+servo_pin2 = 19
+GPIO.setup(servo_pin1, GPIO.OUT)
+GPIO.setup(servo_pin2, GPIO.OUT)
 
 # Создаем объект PWM для сервомотора
-pwm = GPIO.PWM(servo_pin, 50)
-pwm.start(2) #Меня смущяет 0, потому что коэффициент заполнения 0 в контексте ШИМ-сигнала означает, что сигнал всегда находится
-# в состоянии LOW, то есть его коэффициент заполнения равен 0%
-
+pwm1 = GPIO.PWM(servo_pin1, 50) # 50 Гц (период 20 мс)
+pwm2 = GPIO.PWM(servo_pin2, 50) # 50 Гц (период 20 мс)
+pwm1.start(2)
+pwm2.start(2)
 
 def set_angle(angle):
     duty = angle / 18 + 2
     GPIO.output(servo_pin, True)
     pwm.ChangeDutyCycle(duty)
-    time.sleep(1)
     GPIO.output(servo_pin, False)
     pwm.ChangeDutyCycle(0)
 
@@ -30,8 +31,7 @@ def yes_or_not():
         return 0
     else:
         return 1
-
-
+ч1
 
 def is_pixel_black_or_write(pixel):
     red, green, blue = pixel
@@ -73,11 +73,11 @@ def difference():
         if old == 1 and human == 1:
 
             print("HUMAN")
-            set_angle(90)  # Поворот на 90 градусов
-            time.sleep(2)
-            set_angle(0)  # Поворот на 0 градусов
-            old = 0
-            human = 0
+            set_angle(pwm1, 0)
+            set_angle(pwm1, 90)
+            set_angle(pwm2, 0)
+            set_angle(pwm2, 90)
+        human = 0
         else:
             old = human
 while True:
