@@ -39,7 +39,6 @@ def yes_or_not():
         return 0
     else:
         return 1
-ч1
 
 def is_pixel_black_or_write(pixel):
     red, green, blue = pixel
