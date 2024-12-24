@@ -3,12 +3,16 @@ import time
 
 # Настройка GPIO
 GPIO.setmode(GPIO.BCM)
-servo_pin = 18
-GPIO.setup(servo_pin, GPIO.OUT)
+servo_pin1 = 26
+GPIO.setup(servo_pin1, GPIO.OUT)
+servo_pin2 = 26
+GPIO.setup(servo_pin2, GPIO.OUT)
 
 # Создаем объект PWM
-pwm = GPIO.PWM(servo_pin, 50)  # Частота 50 Гц
-pwm.start(0)
+pwm1 = GPIO.PWM(servo_pin, 50)  # Частота 50 Гц
+pwm1.start(0)
+pwm2 = GPIO.PWM(servo_pin, 50)  # Частота 50 Гц
+pwm2.start(0)
 
 def set_angle(angle):
     duty = angle / 18 + 2
@@ -26,6 +30,6 @@ try:
 
         set_angle(180)  # Устанавливаем угол поворота на 180 градусов
         time.sleep(1)   # Ждем 1 секунду
-finally:
-    pwm.stop()
-    GPIO.cleanup()
+while True:
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        cv2.destroyAllWindows()

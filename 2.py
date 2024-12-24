@@ -9,21 +9,21 @@ count = 0  # Инициализируем счетчик пикселей
 # Настройка GPIO для сервомотора
 GPIO.setmode(GPIO.BCM)
 servo_pin1 = 18
-servo_pin2 = 19
 GPIO.setup(servo_pin1, GPIO.OUT)
+GPIO.setmode(GPIO.BCM)
+servo_pin2 = 26
 GPIO.setup(servo_pin2, GPIO.OUT)
 
 # Создаем объект PWM для сервомотора
 pwm1 = GPIO.PWM(servo_pin1, 50) # 50 Гц (период 20 мс)
+pwm1.start(0)
 pwm2 = GPIO.PWM(servo_pin2, 50) # 50 Гц (период 20 мс)
-pwm1.start(2)
-pwm2.start(2)
+pwm2.start(0)
 
-def set_angle(angle):
+def set_angle( angle):
     duty = angle / 18 + 2
-    GPIO.output(servo_pin, True)
     pwm.ChangeDutyCycle(duty)
-    GPIO.output(servo_pin, False)
+    time.sleep(1)
     pwm.ChangeDutyCycle(0)
 
 def yes_or_not():
@@ -31,7 +31,6 @@ def yes_or_not():
         return 0
     else:
         return 1
-ч1
 
 def is_pixel_black_or_write(pixel):
     red, green, blue = pixel
@@ -46,7 +45,7 @@ def difference():
     human = 0
     global count
     while True:
-        time.sleep(3)
+
         good, img = camera.read()
         cv2.imwrite('w1.png', img)
         image_1 = Image.open("w.png")
@@ -80,8 +79,9 @@ def difference():
             old = human
 while True:
     good, img = camera.read()
-    cv2.imshow("Image", img)
     if cv2.waitKey(1) == ord('r'):
         good, image = camera.read()
         cv2.imwrite("w.png", image)
         difference()
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        cv2.destroyAllWindows()
