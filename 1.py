@@ -9,27 +9,42 @@ servo_pin2 = 26
 GPIO.setup(servo_pin2, GPIO.OUT)
 
 # Создаем объект PWM
-pwm1 = GPIO.PWM(servo_pin, 50)  # Частота 50 Гц
+pwm1 = GPIO.PWM(servo_pin1, 50)  # Частота 50 Гц
 pwm1.start(0)
-pwm2 = GPIO.PWM(servo_pin, 50)  # Частота 50 Гц
+pwm2 = GPIO.PWM(servo_pin2, 50)  # Частота 50 Гц
 pwm2.start(0)
 
-def set_angle(angle):
-    duty = angle / 18 + 2
-    pwm.ChangeDutyCycle(duty)
+def set_angle1( angle1):
+    duty1 = angle1 / 18 + 2
+    pwm1.ChangeDutyCycle(duty1)
     time.sleep(1)
-    pwm.ChangeDutyCycle(0)
+    pwm1.ChangeDutyCycle(0)
+
+def set_angle2( angle2):
+    duty2 = angle2 / 18 + 2
+    pwm2.ChangeDutyCycle(duty2)
+    time.sleep(1)
+    pwm2.ChangeDutyCycle(0)
 
 try:
     while True:
-        set_angle(0)    # Устанавливаем угол поворота на 0 градусов
+        set_angle1(0)    # Устанавливаем угол поворота на 0 градусов
         time.sleep(1)   # Ждем 1 секунду
 
-        set_angle(90)   # Устанавливаем угол поворота на 90 градусов
+        set_angle1(90)   # Устанавливаем угол поворота на 90 градусов
         time.sleep(1)   # Ждем 1 секунду
 
-        set_angle(180)  # Устанавливаем угол поворота на 180 градусов
-        time.sleep(1)   # Ждем 1 секунду
+        set_angle1(180)  # Устанавливаем угол поворота на 180 градусов
+        time.sleep(1)
+
+        set_angle1(0)  # Устанавливаем угол поворота на 0 градусов
+        time.sleep(1)  # Ждем 1 секунду
+
+        set_angle1(90)  # Устанавливаем угол поворота на 90 градусов
+        time.sleep(1)  # Ждем 1 секунду
+
+        set_angle1(180)  # Устанавливаем угол поворота на 180 градусов
+        time.sleep(1)
 while True:
     if cv2.waitKey(1) & 0xFF == ord('q'):
         cv2.destroyAllWindows()
