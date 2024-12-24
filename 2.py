@@ -9,22 +9,30 @@ count = 0  # Инициализируем счетчик пикселей
 # Настройка GPIO для сервомотора
 GPIO.setmode(GPIO.BCM)
 servo_pin1 = 18
-servo_pin2 = 26
 GPIO.setup(servo_pin1, GPIO.OUT)
+
+GPIO.setmode(GPIO.BCM)
+servo_pin2 = 26
 GPIO.setup(servo_pin2, GPIO.OUT)
 
 # Создаем объект PWM для сервомотора
-pwm1 = GPIO.PWM(servo_pin1, 50) # 50 Гц (период 20 мс)
-pwm2 = GPIO.PWM(servo_pin2, 50) # 50 Гц (период 20 мс)
-pwm1.start(2)
-pwm2.start(2)
+pwm1 = GPIO.PWM(servo_pin1, 50)  # Частота 50 Гц
+pwm1.start(0)
 
-def set_angle(angle):
-    duty = angle / 18 + 2
-    GPIO.output(servo_pin, True)
-    pwm.ChangeDutyCycle(duty)
-    GPIO.output(servo_pin, False)
-    pwm.ChangeDutyCycle(0)
+pwm2 = GPIO.PWM(servo_pin2, 50)  # Частота 50 Гц
+pwm2.start(0)
+
+def set_angle1(angle1):
+    duty1 = angle1 / 18 + 2
+    pwm1.ChangeDutyCycle(duty1)
+    time.sleep(1)
+    pwm1.ChangeDutyCycle(0)
+
+def set_angle2(angle2):
+    duty2 = angle2 / 18 + 2
+    pwm2.ChangeDutyCycle(duty2)
+    time.sleep(1)
+    pwm2.ChangeDutyCycle(0)
 
 def yes_or_not():
     if count <= 30000:
@@ -71,10 +79,12 @@ def difference():
         if old == 1 and human == 1:
 
             print("HUMAN")
-            set_angle(pwm1, 0)
-            set_angle(pwm1, 90)
-            set_angle(pwm2, 0)
-            set_angle(pwm2, 90)
+            set_angle1(0)  # Устанавливаем угол поворота на 0 градусов
+            set_angle1(90)  # Устанавливаем угол поворота на 90 градусов
+            set_angle1(180)  # Устанавливаем угол поворота на 180 градусов
+            set_angle2(0)  # Устанавливаем угол поворота на 0 градусов
+            set_angle2(90)  # Устанавливаем угол поворота на 90 градусов
+            set_angle2(180)  # Устанавливаем угол поворота на 180 градусов
         human = 0
         else:
             old = human
