@@ -18,7 +18,7 @@ pwm2 = GPIO.PWM(servo_pin2, 50)  # Частота 50 Гц
 pwm2.start(0)
 
 def set_angle1(angle1):
-    duty1 = angle / 18 + 2
+    duty1 = angle1 / 18 + 2
     pwm1.ChangeDutyCycle(duty1)
     time.sleep(1)
     pwm1.ChangeDutyCycle(0)
@@ -48,5 +48,4 @@ try:
 
         set_angle2(180)  # Устанавливаем угол поворота на 180 градусов
 finally:
-    pwm.stop()
     GPIO.cleanup()
