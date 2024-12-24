@@ -9,7 +9,7 @@ count = 0  # Инициализируем счетчик пикселей
 # Настройка GPIO для сервомотора
 GPIO.setmode(GPIO.BCM)
 servo_pin1 = 18
-servo_pin2 = 19
+servo_pin2 = 26
 GPIO.setup(servo_pin1, GPIO.OUT)
 GPIO.setup(servo_pin2, GPIO.OUT)
 
@@ -78,6 +78,7 @@ def difference():
         human = 0
         else:
             old = human
+
 while True:
     good, img = camera.read()
     cv2.imshow("Image", img)
@@ -85,3 +86,5 @@ while True:
         good, image = camera.read()
         cv2.imwrite("w.png", image)
         difference()
+    if cv2.waitKey(1) == ord('q'):
+        cv2.destroyAllWindows()
