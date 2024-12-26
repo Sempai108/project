@@ -5,7 +5,7 @@ import time  # Импортируем библиотеку для работы �
 
 camera = cv2.VideoCapture(0)  # Инициализируем захват видео с камеры (номер 0)
 count = 0  # Инициализируем счетчик пикселей
-
+human_detect = {}
 # Настройка GPIO для сервомотора
 GPIO.setmode(GPIO.BCM)
 servo_pin1 = 18
@@ -36,9 +36,11 @@ def set_angle2(angle2):
 
 def yes_or_not():
     if count <= 30000:
-        return 0
+        value = 0
+        return value
     else:
-        return 1
+        value = 1
+        return value
 
 def is_pixel_black_or_write(pixel):
     red, green, blue = pixel
@@ -50,7 +52,7 @@ def is_pixel_black_or_write(pixel):
 
 def difference():
     old = 0
-    human = 0
+    human_detect[0]['human'] = 0
     global count
     while True:
         time.sleep(3)
@@ -72,25 +74,24 @@ def difference():
                 count = count + color
         print(count, width * height)
 
-        human = yes_or_not()
-
+        human_detect[0]['human'] = yes_or_not()
+        human = human_detect[0]['human']
 
         if old == 1 and human == 1:
 
-            print("HUMAN")
+            print("PERSON WAS DISCOVERED")
             set_angle1(0)    # Устанавливаем угол поворота на 0 градусов
             set_angle1(90)   # Устанавливаем угол поворота на 90 градусов
             set_angle1(180)  # Устанавливаем угол поворота на 180 градусов
             set_angle2(0)  # Устанавливаем угол поворота на 0 градусов
             set_angle2(90)  # Устанавливаем угол поворота на 90 градусов
             set_angle2(180)  # Устанавливаем угол поворота на 180 градусов
-        human = 0
+            human_detect[0]['human'] = human
         else:
             old = human
 
 while True:
     good, img = camera.read()
-    cv2.imshow("Image", img)
     if cv2.waitKey(1) == ord('r'):
         good, image = camera.read()
         cv2.imwrite("w.png", image)
