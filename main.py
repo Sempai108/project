@@ -95,7 +95,8 @@ def difference():
 
 while True:
     good, img = camera.read()
-    good, image = camera.read()
-    cv2.imwrite("w.png", image)
+    if cv2.waitKey(1) == ord('r'):
+        good, image = camera.read()
+        cv2.imwrite("w.png", image)
     if cv2.waitKey(1) == ord('q'):
         cv2.destroyAllWindows() 
