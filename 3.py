@@ -91,12 +91,15 @@ def difference():
             human = 0
         else:
             old = human
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
+# Снимаем начальное изображение и сохраняем его как 'w.png'
+good, image = camera.read()
+cv2.imwrite("w.png", image)
 
-while True:
-    good, img = camera.read()
-    if cv2.waitKey(1) == ord('r'):
-        good, image = camera.read()
-        cv2.imwrite("w.png", image)
-    if cv2.waitKey(1) == ord('q'):
-        cv2.destroyAllWindows()
+# Запускаем функцию для вычисления разницы
+difference()
+
+camera.release()
+cv2.destroyAllWindows()
