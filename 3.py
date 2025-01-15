@@ -50,8 +50,7 @@ def difference():
     old = 0
     global count
 
-    while True:
-        time.sleep(3)
+    while True:в
         good, img = camera.read()
         cv2.imwrite('w1.png', img)
         image_1 = Image.open("w.png")
@@ -73,19 +72,17 @@ def difference():
 
         if old == 1 and human == 1:
             print("PERSON WAS DISCOVERED")
-            set_angle1(0)  # Устанавливаем угол поворота на 0 градусов
             set_angle1(90)  # Устанавливаем угол поворота на 90 градусов
-            set_angle1(180)  # Устанавливаем угол поворота на 180 градусов
-            set_angle2(0)  # Устанавливаем угол поворота на 0 градусов
+            set_angle1(0)  # Устанавливаем угол поворота на 0 градусов
             set_angle2(90)  # Устанавливаем угол поворота на 90 градусов
-            set_angle2(180)  # Устанавливаем угол поворота на 180 градусов
+            set_angle2(0)  # Устанавливаем угол поворота на 0 градусов
             human = 0
         else:
             old = human
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-# Снимаем начальное изображение и сохраняем его как 'w.png'
+# Снимаем начальное изображение и сохраняем его как 'w.png'Ы
 good, image = camera.read()
 cv2.imwrite("w.png", image)
 
