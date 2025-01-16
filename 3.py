@@ -50,7 +50,7 @@ def difference():
     old = 0
     global count
 
-    while True:в
+    while True:
         good, img = camera.read()
         cv2.imwrite('w1.png', img)
         image_1 = Image.open("w.png")
