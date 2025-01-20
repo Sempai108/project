@@ -17,7 +17,7 @@ def set_angle(angle):
 
 try:
     while True:
-        for angle in [90, 45, 135]:
+        for angle in [0, 45, 135]:
             set_angle(angle)
             time.sleep(2)  # Задержка перед следующим углом
 except KeyboardInterrupt:
