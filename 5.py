@@ -17,9 +17,12 @@ def set_angle(angle):
 
 try:
     while True:
-        for angle in [90, 45, 90, 135]: # выставляется угол
-            set_angle(angle)
-            time.sleep(2)  # Задержка перед следующим углом
+        # Ввод угла поворота через терминал
+        desired_angle = float(input("Введите угол поворота (0-180): "))
+        if 0 <= desired_angle <= 180:
+            set_angle(desired_angle)
+        else:
+            print("Пожалуйста, введите угол в диапазоне от 0 до 180.")
 except KeyboardInterrupt:
     pwm.stop()
     GPIO.cleanup()
