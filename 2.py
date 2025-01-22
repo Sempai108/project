@@ -1,3 +1,4 @@
+
 import cv2  # Импортируем библиотеку OpenCV для работы с видео и изображениями
 from PIL import Image, ImageChops  # Импортируем классы Image и ImageChops из библиотеки Pillow для работы с изображениями
 import RPi.GPIO as GPIO  # Импортируем библиотеку для работы с GPIO
@@ -14,6 +15,7 @@ GPIO.setmode(GPIO.BCM)
 servo_pin1 = 18
 GPIO.setup(servo_pin1, GPIO.OUT)
 
+GPIO.setmode(GPIO.BCM)
 servo_pin2 = 26
 GPIO.setup(servo_pin2, GPIO.OUT)
 
@@ -49,48 +51,45 @@ def difference():
     old = 0
     global count
 
-    try:
-        while True:
-            good, img = camera.read()
-            cv2.imwrite('w1.png', img)
-            image_1 = Image.open("w.png")
-            image_2 = Image.open("w1.png")
+    while True:
+        good, img = camera.read()
+        cv2.imwrite('w1.png', img)
+        image_1 = Image.open("w.png")
+        image_2 = Image.open("w1.png")
 
-            result = ImageChops.difference(image_1, image_2)
-            result.save('result.jpg')
-            count = 0
-            res = cv2.imread('result.jpg', cv2.IMREAD_GRAYSCALE)
-            image = Image.open('result.jpg')
-            width, height = image.size
-            for y in range(height):
-                for x in range(width):
-                    pixel = image.getpixel((x, y))
-                    color = is_pixel_black_or_white(pixel)
-                    count += color
-            print(count, width * height)
-            human = yes_or_not()
+        result = ImageChops.difference(image_1, image_2)
+        result.save('result.jpg')
+        count = 0
+        res = cv2.imread('result.jpg', cv2.IMREAD_GRAYSCALE)
+        image = Image.open('result.jpg')
+        width, height = image.size
+        for y in range(height):
+            for x in range(width):
+                pixel = image.getpixel((x, y))
+                color = is_pixel_black_or_white(pixel)
+                count += color
+        print(count, width * height)
+        human = yes_or_not()
 
-            if old == 1 and human == 1:
-                print("PERSON WAS DISCOVERED")
-                set_angle1(90)  # Устанавливаем угол поворота на 90 градусов
-                set_angle1(0)  # Устанавливаем угол поворота на 0 градусов
-                set_angle2(90)  # Устанавливаем угол поворота на 90 градусов
-                set_angle2(0)  # Устанавливаем угол поворота на 0 градусов
-                human = 0
-            else:
-                old = human
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-    except KeyboardInterrupt:
-        print("Прерывание программы. Освобождение ресурсов...")
-    finally:
-        camera.release()
-        cv2.destroyAllWindows()
-        GPIO.cleanup()
+        if old == 1 and human == 1:
+            print("PERSON WAS DISCOVERED")
+            set_angle1(90)  # Устанавливаем угол поворота на 90 градусов
+            set_angle1(0)  # Устанавливаем угол поворота на 0 градусов
+            set_angle2(90)  # Устанавливаем угол поворота на 90 градусов
+            set_angle2(0)  # Устанавливаем угол поворота на 0 градусов
+            human = 0
+        else:
+            old = human
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
-# Снимаем начальное изображение и сохраняем его как 'w.png'
+# Снимаем начальное изображение и сохраняем его как 'w.png'Ы
 good, image = camera.read()
 cv2.imwrite("w.png", image)
 
 # Запускаем функцию для вычисления разницы
 difference()
+
+camera.release()
+cv2.destroyAllWindows()
+GPIO.cleanup()
