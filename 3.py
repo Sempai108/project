@@ -2,7 +2,6 @@ import cv2  # Импортируем библиотеку OpenCV для рабо
 from PIL import Image, ImageChops  # Импортируем классы Image и ImageChops из библиотеки Pillow для работы с изображениями
 import RPi.GPIO as GPIO  # Импортируем библиотеку для работы с GPIO
 import time  # Импортируем библиотеку для работы с временем
-import os  # Импортируем библиотеку для работы с файловой системой
 
 camera = cv2.VideoCapture(0)  # Инициализируем захват видео с камеры (номер 0)
 count = 0  # Инициализируем счетчик пикселей
