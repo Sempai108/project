@@ -91,11 +91,7 @@ def difference():
 good, image = camera.read()
 cv2.imwrite("w.png", image)
 
-# Показываем начальное изображение
-initial_image = cv2.imread("w.png")
-cv2.imshow("Initial Image", initial_image)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+
 
 # Запускаем функцию для вычисления разницы
 difference()
