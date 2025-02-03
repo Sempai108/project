@@ -1,84 +1,108 @@
+from time import sleep
 import cv2  # Импортируем библиотеку OpenCV для работы с видео и изображениями
-from PIL import Image, \
-    ImageChops  # Импортируем классы Image и ImageChops из библиотеки Pillow для работы с изображениями
+from PIL import Image, ImageChops  # Импортируем классы Image и ImageChops из библиотеки Pillow для работы с изображениями
+import RPi.GPIO as GPIO  # Импортируем библиотеку для работы с GPIO
+import time  # Импортируем библиотеку для работы с временем
 
 camera = cv2.VideoCapture(0)  # Инициализируем захват видео с камеры (номер 0)
 count = 0  # Инициализируем счетчик пикселей
+
+GPIO.setwarnings(False)
+
+# Настройка GPIO для сервомотора
+GPIO.setmode(GPIO.BCM)
+servo_pin1 = 18
+GPIO.setup(servo_pin1, GPIO.OUT)
+
+servo_pin2 = 26
+GPIO.setup(servo_pin2, GPIO.OUT)
+
+# Создаем объект PWM для сервомотора
+pwm1 = GPIO.PWM(servo_pin1, 50)  # Частота 50 Гц
+pwm1.start(0)
+
+pwm2 = GPIO.PWM(servo_pin2, 50)  # Частота 50 Гц
+pwm2.start(0)
+
+
+def set_angle1(angle1):
+    duty1 = angle1 / 18 + 2
+    pwm1.ChangeDutyCycle(duty1)
+    time.sleep(1)
+    pwm1.ChangeDutyCycle(0)
+
+
+def set_angle2(angle2):
+    duty2 = angle2 / 18 + 2
+    pwm2.ChangeDutyCycle(duty2)
+    time.sleep(1)
+    pwm2.ChangeDutyCycle(0)
+
+
+def yes_or_not():
+    global count
+    return 1 if count > 30000 else 0
 
 
 def is_pixel_black_or_white(pixel):
     red, green, blue = pixel
     average = (red + green + blue) / 3
-    return 1 if average >= 20 else 0
+    return 1 if average >= 30 else 0
 
 
-def yes_or_not():
+def difference():
+    old = 0
     global count
-    if count >= 30000:
-        print('Yes_or_not: True')
-    else:
-        print('Yes_or_not: False')
 
-
-def process_image():
-    global count
-    good, img = camera.read()  # Захватываем кадр с камеры
-    if not good:
-        print("Failed to read from camera")
-        return
-
-    cv2.imwrite('w1.png', img)  # Сохраняем захваченное изображение в файл
 
     try:
-        image_1 = Image.open("w.png")  # Открываем базовое изображение
-    except FileNotFoundError:
-        print("File w.png not found")
-        return
+        while True:
+            good, img = camera.read()
+            cv2.imwrite('w1.png', img)
+            image_1 = Image.open("w.png")
+            image_2 = Image.open("w1.png")
 
-    image_2 = Image.open("w1.png")  # Открываем захваченное изображение
+            result = ImageChops.difference(image_1, image_2)
+            result.save('result.jpg')
+            count = 0
+            res = cv2.imread('result.jpg', cv2.IMREAD_GRAYSCALE)
+            image = Image.open('result.jpg')
+            width, height = image.size
+            for y in range(height):
+                for x in range(width):
+                    pixel = image.getpixel((x, y))
+                    color = is_pixel_black_or_white(pixel)
+                    count += color
+            print(count, width * height)
+            human = yes_or_not()
 
-    result = ImageChops.difference(image_1, image_2)
-    result.save('result.jpg')
-
-    count = 0
-    res = cv2.imread('result.jpg', cv2.IMREAD_GRAYSCALE)
-
-    if res is None or res.size == 0:
-        print("Error: Result image is empty or not valid")
-        return
-
-    image = Image.open('result.jpg')
-    width, height = image.size
-    for y in range(height):
-        for x in range(width):
-            pixel = image.getpixel((x, y))
-            count += is_pixel_black_or_white(pixel)
-
-    print(count, width * height)
-    yes_or_not()
-
-
-try:
-    # Захват и сохранение базового изображения при запуске
-    good, image = camera.read()
-    if good:
-        cv2.imwrite("w.png", image)
-
-    while True:
-        process_image()
-
-        # Отображение изображений w.png и w1.png
-        try:
-            img1 = cv2.imread("w.png")
-            cv2.imshow('Base Image', img1)
-
-            img2 = cv2.imread("w1.png")
-            cv2.imshow('Captured Image', img2)
-
-            if cv2.waitKey(1) & 0xFF == ord('qd'):
+            if old == 1 and human == 1:
+                print("PERSON WAS DISCOVERED")
+                set_angle1(90)  # Устанавливаем угол поворота на 90 градусов
+                set_angle1(0)  # Устанавливаем угол поворота на 0 градусов
+                set_angle2(90)  # Устанавливаем угол поворота на 90 градусов
+                set_angle2(0)  # Устанавливаем угол поворота на 0 градусов
+                human = 0
+            else:
+                old = human
+            if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
-        except Exception as e:
-            print(f"Failed to display image: {e}")
-finally:
-    camera.release()
-    cv2.destroyAllWindows()
+    except KeyboardInterrupt:
+        print("Прерывание программы. Освобождение ресурсов...")
+    finally:
+        camera.release()
+        cv2.destroyAllWindows()
+        GPIO.cleanup()
+
+
+# Снимаем начальное изображение и сохраняем его как 'w.png'
+good, image = camera.read()
+cv2.imwrite("w.png", image)
+
+# Показываем начальное изображение
+initial_image = cv2.imread("w.png")
+cv2.imshow("Initial Image", initial_image)
+cv2.waitKey(0)
+
+# Запускаем функцию для вычисления разницы
+difference()
