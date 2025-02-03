@@ -10,4 +10,3 @@ pygame.mixer.music.play()
 # Задержка для воспроизведения аудио до конца
 while pygame.mixer.music.get_busy():
     pygame.time.Clock().tick(10)
-
