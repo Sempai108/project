@@ -4,7 +4,7 @@ from PIL import Image, ImageChops  # Импортируем классы Image �
 import RPi.GPIO as GPIO  # Импортируем библиотеку для работы с GPIO
 import time  # Импортируем библиотеку для работы с временем
 
-camera = cv2.VideoCapture(0)  # Инициализируем захват видео с камеры (номер 0)
+camera = cv2.VideoCapture(1)  # Инициализируем захват видео с камеры (номер 0)
 count = 0  # Инициализируем счетчик пикселей
 
 GPIO.setwarnings(False)
@@ -76,6 +76,12 @@ def difference():
             print(count, width * height)
             human = yes_or_not()
 
+            # Отображение изображений w1.png и result.jpg
+            w1_image = cv2.imread("w1.png")
+            cv2.imshow("Captured Image", w1_image)
+            result_image = cv2.imread("result.jpg")
+            cv2.imshow("Difference Image", result_image)
+
             if old == 1 and human == 1:
                 print("PERSON WAS DISCOVERED")
                 set_angle1(90)  # Устанавливаем угол поворота на 90 градусов
@@ -102,7 +108,7 @@ cv2.imwrite("w.png", image)
 # Показываем начальное изображение
 initial_image = cv2.imread("w.png")
 cv2.imshow("Initial Image", initial_image)
-cv2.waitKey(0)
+
 
 # Запускаем функцию для вычисления разницы
 difference()
