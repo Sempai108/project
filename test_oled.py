@@ -1,7 +1,18 @@
-import cv2  # Импортируем библиотеку OpenCV для работы с видео и изображениями
-from PIL import Image, ImageChops  # Импортируем классы Image и ImageChops из библиотеки Pillow для работы с изображениями
-import pygame  # Импортируем библиотеку pygame для воспроизведения аудио
 import time
+import cv2
+from PIL import Image, ImageChops
+import RPi.GPIO as GPIO
+from luma.core.interface.serial import i2c
+from luma.oled.device import ssd1306
+
+# Настройка интерфейса I2C и OLED-дисплея
+serial = i2c(port=1, address=0x3C)
+device = ssd1306(serial)
+
+# Загрузка вашего изображения
+image_path = "C:\\Users\\1\\Documents\\ПР\\было зачем-то нужно\\загруженное (1).png"
+static_image = Image.open(image_path).convert("1")  # Преобразуем изображение в черно-белое
+device.display(static_image)  # Отображение изображения на экране
 
 camera = cv2.VideoCapture(0)  # Инициализируем захват видео с камеры (номер 0)
 count = 0  # Инициализируем счетчик пикселей
@@ -42,16 +53,16 @@ def yes_or_not():
     global count
     return 1 if count > 30000 else 0
 
+
 def is_pixel_black_or_white(pixel):
     red, green, blue = pixel
     average = (red + green + blue) / 3
     return 1 if average >= 30 else 0
 
+
 def difference():
     old = 0
     global count
-
-    pygame.mixer.init()
 
     try:
         while True:
@@ -76,15 +87,10 @@ def difference():
 
             if old == 1 and human == 1:
                 print("PERSON WAS DISCOVERED")
-                pygame.mixer.music.load("C:\\Users\\1\\Documents\\ПР\\TTS\\TTS_1.mp3")
-                pygame.mixer.music.play()
-                while pygame.mixer.music.get_busy():
-                    pygame.time.Clock().tick(10)
                 set_angle1(90)  # Устанавливаем угол поворота на 90 градусов
                 set_angle1(0)  # Устанавливаем угол поворота на 0 градусов
                 set_angle2(90)  # Устанавливаем угол поворота на 90 градусов
                 set_angle2(0)  # Устанавливаем угол поворота на 0 градусов
-
                 human = 0
             else:
                 old = human
@@ -95,6 +101,8 @@ def difference():
     finally:
         camera.release()
         cv2.destroyAllWindows()
+        GPIO.cleanup()
+
 
 # Снимаем начальное изображение и сохраняем его как 'w.png'
 good, image = camera.read()
