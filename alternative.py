@@ -57,4 +57,3 @@ difference()
 camera.release()
 cv2.destroyAllWindows()
 GPIO.cleanup()
-ц
