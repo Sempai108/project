@@ -7,7 +7,7 @@ serial = i2c(port=1, address=0x3C)
 device = ssd1306(serial)
 
 # Загрузка вашего изображения
-image_path = "C:\\Users\\1\\Documents\\ПР\\было зачем-то нужно\\загруженное (1).png"
+image_path = "/home/promrobo/project/w1.png"
 image = Image.open(image_path).convert("1")  # Преобразуем изображение в черно-белое
 
 # Отображение изображения на экране
