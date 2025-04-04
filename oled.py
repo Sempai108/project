@@ -17,7 +17,7 @@ display.show()
 
 # Загрузка изображения
 # Убедитесь, что изображение 128x64 пикселей и черно-белое (1-bit mode)
-image = Image.open("eye.bmp").convert("1")
+image = Image.open("/home/promrobo/eye.bmp").convert("1")
 
 # Отображение изображения на экране
 display.image(image)
