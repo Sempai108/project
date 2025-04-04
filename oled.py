@@ -15,10 +15,12 @@ display = SSD1306_I2C(WIDTH, HEIGHT, i2c, addr=0x3C)
 display.fill(0)
 display.show()
 
-# Загрузка изображения
-# Убедитесь, что изображение 128x64 пикселей и черно-белое (1-bit mode)
-image = Image.open("/home/promrobo/eye.bmp").convert("1")
+# Конвертация изображения в 1-bit
+image = Image.open("/home/promrobo/project/eye.bmp")
+image = image.convert("1")  # Преобразование в чёрно-белый формат
+image.save("/home/promrobo/project/eye_converted.bmp")  # Сохранение конвертированного файла
 
-# Отображение изображения на экране
+# Загрузка и отображение конвертированного изображения
+image = Image.open("/home/promrobo/project/eye_converted.bmp")
 display.image(image)
 display.show()
