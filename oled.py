@@ -1,36 +1,24 @@
-from PIL import Image, ImageDraw
-from luma.core.interface.serial import i2c
-from luma.oled.device import ssd1306
+import board
+import busio
+from adafruit_ssd1306 import SSD1306_I2C
+from PIL import Image
 
-# Настройка интерфейса I2C и OLED-дисплея
-try:
-    serial = i2c(port=1, address=0x3C)  # Убедитесь, что адрес соответствует вашему дисплею
-    device = ssd1306(serial)
-    print("Устройство подключено успешно.")
-except Exception as e:
-    print(f"Ошибка подключения к OLED-дисплею: {e}")
-    exit()
+# Настройка I2C
+i2c = busio.I2C(board.SCL, board.SDA)
 
-# Создание изображения с текстом
-try:
-    # Настройки дисплея
-    width = device.width
-    height = device.height
+# Инициализация дисплея
+WIDTH = 128
+HEIGHT = 64
+display = SSD1306_I2C(WIDTH, HEIGHT, i2c, addr=0x3C)
 
-    # Создаем пустое изображение
-    text_image = Image.new("1", (width, height), "black")
-    draw = ImageDraw.Draw(text_image)
+# Очистка дисплея
+display.fill(0)
+display.show()
 
-    # Пишем текст на экране
-    draw.text((10, 10), "Привет, Кирилл!", fill="white")  # Ваш текст и координаты
+# Загрузка изображения
+# Убедитесь, что изображение 128x64 пикселей и черно-белое (1-bit mode)
+image = Image.open("eye.bmp").convert("1")
 
-    # Отображение текста на экране
-    device.display(text_image)
-    print("Текст успешно отображен.")
-except Exception as e:
-    print(f"Ошибка при выводе текста: {e}")
-    exit()
-
-# Очистка экрана отключена, текст останется отображённым
-# Удалите или закомментируйте строку ниже, если она у вас есть:
-# device.clear()
+# Отображение изображения на экране
+display.image(image)
+display.show()
