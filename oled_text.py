@@ -32,4 +32,13 @@ while True:
 
     # Если текст больше не помещается на экране, очищаем дисплей
     if y_position + 10 > HEIGHT:  # 10 пикселей - примерная высота строки
-        draw.rectangle((0, 0, WIDTH, HEIGHT), fill=0)  # Очищ
+        draw.rectangle((0, 0, WIDTH, HEIGHT), fill=0)  # Очищаем изображение
+        y_position = 0  # Сбрасываем позицию текста
+
+    # Рисование текста на новой строке
+    draw.text((0, y_position), user_input, font=font, fill=255)
+    y_position += 10  # Смещаем позицию для следующей строки
+
+    # Отображение изображения на экране
+    display.image(image)
+    display.show()
