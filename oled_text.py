@@ -15,21 +15,21 @@ display = SSD1306_I2C(WIDTH, HEIGHT, i2c, addr=0x3C)
 display.fill(0)
 display.show()
 
+# Создание изображения
+image = Image.new("1", (WIDTH, HEIGHT))
+draw = ImageDraw.Draw(image)
+
+# Использование встроенного шрифта
+font = ImageFont.load_default()
+
+# Начальная координата для текста
+y_position = 0
+
 # Цикл для ввода текста
 while True:
     # Ввод текста пользователем
     user_input = input("Введите текст для отображения на экране: ")
 
-    # Создание изображения
-    image = Image.new("1", (WIDTH, HEIGHT))
-    draw = ImageDraw.Draw(image)
-
-    # Использование встроенного шрифта
-    font = ImageFont.load_default()
-
-    # Рисование текста
-    draw.text((0, 0), user_input, font=font, fill=255)
-
-    # Отображение на экране
-    display.image(image)
-    display.show()
+    # Если текст больше не помещается на экране, очищаем дисплей
+    if y_position + 10 > HEIGHT:  # 10 пикселей - примерная высота строки
+        draw.rectangle((0, 0, WIDTH, HEIGHT), fill=0)  # Очищ
