@@ -1,103 +1,74 @@
-import cv2  # Импортируем библиотеку OpenCV для работы с видео и изображениями
-from PIL import Image, ImageChops  # Импортируем классы Image и ImageChops из библиотеки Pillow для работы с изображениями
-import RPi.GPIO as GPIO  # Импортируем библиотеку для работы с GPIO
-import time  # Импортируем библиотеку для работы с временем
+from Modules.camera_utils import initialize_camera, capture_image
+from Modules.gpio_utils import setup_servo, set_angle, cleanup_gpio
+from Modules.image_processing import compute_difference, is_pixel_black_or_white
+from Modules.display_utils import initialize_display, display_image
+from Modules.image_utils import convert_to_1bit
+from PIL import Image
+from classes.logger import Logger
+from config import config
+import cv2
 
-camera = cv2.VideoCapture(0)  # Инициализируем захват видео с камеры (номер 0)
-count = 0  # Инициализируем счетчик пикселей
+logger = Logger().logger
 
-GPIO.setwarnings(False)
+class SetAngle:
+    def __init__(self, pwm):
+        self.pwm = pwm
 
-# Настройка GPIO для сервомотора
-GPIO.setmode(GPIO.BCM)
-servo_pin1 = 18
-GPIO.setup(servo_pin1, GPIO.OUT)
+    def set_pwm_angel(self):
+        set_angle(self.pwm, 90)
+        set_angle(self.pwm, 0)
 
-servo_pin2 = 26
-GPIO.setup(servo_pin2, GPIO.OUT)
-
-# Создаем объект PWM для сервомотора
-pwm1 = GPIO.PWM(servo_pin1, 50)  # Частота 50 Гц
-pwm1.start(0)
-
-pwm2 = GPIO.PWM(servo_pin2, 50)  # Частота 50 Гц
-pwm2.start(0)
-
-
-def set_angle1(angle1):
-    duty1 = angle1 / 18 + 2
-    pwm1.ChangeDutyCycle(duty1)
-    time.sleep(1)
-    pwm1.ChangeDutyCycle(0)
-
-
-def set_angle2(angle2):
-    duty2 = angle2 / 18 + 2
-    pwm2.ChangeDutyCycle(duty2)
-    time.sleep(1)
-    pwm2.ChangeDutyCycle(0)
-
-
-def yes_or_not():
-    global count
+def yes_or_not(count):
     return 1 if count > 30000 else 0
 
-
-def is_pixel_black_or_white(pixel):
-    red, green, blue = pixel
-    average = (red + green + blue) / 3
-    return 1 if average >= 30 else 0
-
-
-def difference():
-    old = 0
-    global count
+def destroy_window():
+    camera = initialize_camera()
+    camera.release()
+    cv2.destroyAllWindows()
+    cleanup_gpio()
 
 
+def main():
+    camera, display = initialize_camera(), initialize_display()
+    pwm1, pwm2 = config.SERVO_PIN1, config.SERVO_PIN2
+    logger.info("main запущен")
     try:
+        image_path, save_path = config.EYE, config.EYE_CONVERTED
+        convert_to_1bit(image_path, save_path)
+        display_image(display, save_path)
+        capture_image(camera, config.W_IMG)  # Сохранение базового изображения
         while True:
-            good, img = camera.read()
-            cv2.imwrite('w1.png', img)
-            image_1 = Image.open("w.png")
-            image_2 = Image.open("w1.png")
+            capture_image(camera, config.W1_IMG)
+            compute_difference(config.W_IMG, config.W1_IMG, config.RESULT_IMG)
 
-            result = ImageChops.difference(image_1, image_2)
-            result.save('result.jpg')
-            count = 0
-            res = cv2.imread('result.jpg', cv2.IMREAD_GRAYSCALE)
-            image = Image.open('result.jpg')
+            # Анализ пикселей
+            count, old = 0, 0 # Если не пашет, вынести из try var old
+            image = Image.open(config.RESULT_IMG)
             width, height = image.size
             for y in range(height):
                 for x in range(width):
                     pixel = image.getpixel((x, y))
-                    color = is_pixel_black_or_white(pixel)
-                    count += color
-            print(count, width * height)
-            human = yes_or_not()
+                    count += is_pixel_black_or_white(pixel)
+                    print(count, width * height)
 
+            human = yes_or_not(count)
             if old == 1 and human == 1:
-                print("PERSON WAS DISCOVERED")
-                set_angle1(90)  # Устанавливаем угол поворота на 90 градусов
-                set_angle1(0)  # Устанавливаем угол поворота на 0 градусов
-                set_angle2(90)  # Устанавливаем угол поворота на 90 градусов
-                set_angle2(0)  # Устанавливаем угол поворота на 0 градусов
+                logger.info("PERSON WAS DISCOVERED")
+                SetAngle(pwm1).set_pwm_angel()
+                SetAngle(pwm2).set_pwm_angel()
+
                 human = 0
             else:
                 old = human
+
             if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+                destroy_window()
+    except Exception as e:
+        logger.error(e, exc_info=True)
     except KeyboardInterrupt:
-        print("Прерывание программы. Освобождение ресурсов...")
-    finally:
-        camera.release()
-        cv2.destroyAllWindows()
-        GPIO.cleanup()
+        logger.info("Прерывание программы...")
+        destroy_window()
 
 
-# Снимаем начальное изображение и сохраняем его как 'w.png'
-good, image = camera.read()
-cv2.imwrite("w.png", image)
-
-
-# Запускаем функцию для вычисления разницы
-difference()
+if __name__ == "__main__":
+    main()
